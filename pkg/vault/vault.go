@@ -21,7 +21,7 @@ func (v *Vault) Apply(evt Event) error {
 
 	id := evt.ID()
 
-	entry := v.Get(id)
+	entry := v.entries[id]
 
 	var err error
 	if entry, err = evt.Mutate(entry); err != nil {
@@ -45,8 +45,4 @@ func (v *Vault) Version() int {
 	}
 
 	return 0
-}
-
-func (v *Vault) Get(id string) Entry {
-	return v.entries[id]
 }
