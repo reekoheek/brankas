@@ -3,7 +3,7 @@ package vault
 type Event interface {
 	Version() int
 	ID() string
-	Apply(Entry) error
+	Mutate(Entry) (Entry, error)
 }
 
 type EventModel struct {
@@ -11,10 +11,14 @@ type EventModel struct {
 	id      string
 }
 
-func (m *EventModel) Version() int {
+func (m EventModel) Version() int {
 	return m.version
 }
 
-func (m *EventModel) ID() string {
+func (m EventModel) ID() string {
 	return m.id
+}
+
+func NewEventModel(version int, id string) EventModel {
+	return EventModel{version, id}
 }
