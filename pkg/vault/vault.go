@@ -10,6 +10,7 @@ type Vault struct {
 
 func New(evts []Event) Vault {
 	return Vault{
+		entries:        map[string]Entry{},
 		commitedEvents: evts,
 	}
 }
@@ -45,4 +46,8 @@ func (v *Vault) Version() int {
 	}
 
 	return 0
+}
+
+func (v *Vault) UncommitedEvents() []Event {
+	return v.uncommitedEvents
 }
