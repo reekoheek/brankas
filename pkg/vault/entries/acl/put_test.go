@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/reekoheek/brankas/pkg/vault"
-	"github.com/stretchr/testify/assert"
+	"gotest.tools/assert"
 )
 
 func TestPut_Mutate(t *testing.T) {
@@ -12,7 +12,7 @@ func TestPut_Mutate(t *testing.T) {
 		name   string
 		ev     Put
 		aEntry vault.Entry
-		rErr   string
+		xErr   string
 	}{
 		{
 			"positive 1",
@@ -58,11 +58,11 @@ func TestPut_Mutate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			entry, err := tt.ev.Mutate(tt.aEntry)
 			if err != nil {
-				assert.Equal(t, tt.rErr, err.Error())
+				assert.Equal(t, tt.xErr, err.Error())
 				return
 			}
 
-			assert.Equal(t, "", tt.rErr, "expected err %s", tt.rErr)
+			assert.Equal(t, "", tt.xErr, "expected err %s", tt.xErr)
 
 			e := entry.(ACL)
 			assert.Equal(t, tt.ev.Mode, e.modes[tt.ev.Username])

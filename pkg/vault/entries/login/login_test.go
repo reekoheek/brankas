@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
+	"gotest.tools/assert"
 )
 
 func TestLogin_Expired(t *testing.T) {
@@ -43,7 +43,7 @@ func TestLogin_AddURL(t *testing.T) {
 		name  string
 		login Login
 		aURL  string
-		rErr  string
+		xErr  string
 	}{
 		{
 			"positive 1",
@@ -75,11 +75,11 @@ func TestLogin_AddURL(t *testing.T) {
 
 			err := tt.login.AddURL(tt.aURL)
 			if err != nil {
-				assert.Equal(t, tt.rErr, err.Error())
+				assert.Equal(t, tt.xErr, err.Error())
 				return
 			}
 
-			assert.Equal(t, "", tt.rErr, "Expected err %s", tt.rErr)
+			assert.Equal(t, "", tt.xErr, "Expected err %s", tt.xErr)
 			assert.Equal(t, urlCount+1, len(tt.login.URLs))
 		})
 	}
@@ -90,7 +90,7 @@ func TestLogin_RemoveURL(t *testing.T) {
 		name  string
 		login Login
 		aURL  string
-		rErr  string
+		xErr  string
 	}{
 		{
 			"positive 1",
@@ -114,11 +114,11 @@ func TestLogin_RemoveURL(t *testing.T) {
 
 			err := tt.login.RemoveURL(tt.aURL)
 			if err != nil {
-				assert.Equal(t, tt.rErr, err.Error())
+				assert.Equal(t, tt.xErr, err.Error())
 				return
 			}
 
-			assert.Equal(t, "", tt.rErr, "Expected err %s", tt.rErr)
+			assert.Equal(t, "", tt.xErr, "Expected err %s", tt.xErr)
 			assert.Equal(t, urlCount-1, len(tt.login.URLs))
 		})
 	}

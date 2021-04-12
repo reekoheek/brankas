@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/google/go-cmp/cmp"
+	"gotest.tools/assert"
 )
 
 func TestNew(t *testing.T) {
@@ -31,7 +32,9 @@ func TestNew(t *testing.T) {
 
 			assert.Equal(t, 0, len(v.uncommitedEvents))
 			assert.Equal(t, len(tt.aEvents), len(v.commitedEvents))
-			assert.Equal(t, tt.aEvents, v.commitedEvents)
+			assert.DeepEqual(t, tt.aEvents, v.commitedEvents, cmp.Comparer(func(ev1 Event, ev2 Event) bool {
+				return ev1.ID() == ev2.ID() && ev1.Version() == ev2.Version()
+			}))
 		})
 	}
 }
@@ -41,7 +44,7 @@ func TestVault_Apply(t *testing.T) {
 		name   string
 		vault  Vault
 		aEvent tEvent
-		rErr   string
+		xErr   string
 	}{
 		{
 			"positive case",
@@ -73,10 +76,10 @@ func TestVault_Apply(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			err := tt.vault.Apply(tt.aEvent)
 			if err != nil {
-				assert.Equal(t, tt.rErr, err.Error())
+				assert.Equal(t, tt.xErr, err.Error())
 				return
 			}
-			assert.Equal(t, "", tt.rErr, "Expecting error: %s", tt.rErr)
+			assert.Equal(t, "", tt.xErr, "Expecting error: %s", tt.xErr)
 			assert.Equal(t, 1, len(tt.vault.uncommitedEvents))
 		})
 	}

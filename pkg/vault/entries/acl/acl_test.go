@@ -3,7 +3,7 @@ package acl
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"gotest.tools/assert"
 )
 
 func TestACL_WriteBy(t *testing.T) {
@@ -96,7 +96,7 @@ func TestACL_Put(t *testing.T) {
 	table := []struct {
 		name  string
 		aMode int
-		rErr  string
+		xErr  string
 	}{
 		{
 			"set none",
@@ -128,11 +128,11 @@ func TestACL_Put(t *testing.T) {
 
 			err := acl.Put("foo", tt.aMode)
 			if err != nil {
-				assert.Equal(t, tt.rErr, err.Error())
+				assert.Equal(t, tt.xErr, err.Error())
 				return
 			}
 
-			assert.Equal(t, "", tt.rErr, "expected err %s", tt.rErr)
+			assert.Equal(t, "", tt.xErr, "expected err %s", tt.xErr)
 			assert.Equal(t, tt.aMode, acl.modes["foo"])
 		})
 	}

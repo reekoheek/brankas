@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/reekoheek/brankas/pkg/vault"
-	"github.com/stretchr/testify/assert"
+	"gotest.tools/assert"
 )
 
 func TestPasswordChanged_Mutate(t *testing.T) {
@@ -13,7 +13,7 @@ func TestPasswordChanged_Mutate(t *testing.T) {
 		name   string
 		ev     PasswordChanged
 		aEntry vault.Entry
-		rErr   string
+		xErr   string
 	}{
 		{
 			"positive case",
@@ -30,11 +30,11 @@ func TestPasswordChanged_Mutate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			e, err := tt.ev.Mutate(tt.aEntry)
 			if err != nil {
-				assert.Equal(t, tt.rErr, err.Error())
+				assert.Equal(t, tt.xErr, err.Error())
 				return
 			}
 
-			assert.Equal(t, "", tt.rErr)
+			assert.Equal(t, "", tt.xErr)
 			entry := e.(Login)
 			assert.Equal(t, tt.ev.ID(), entry.ID())
 			assert.Equal(t, tt.ev.Version(), entry.Version())

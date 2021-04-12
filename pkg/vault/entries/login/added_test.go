@@ -2,9 +2,10 @@ package login
 
 import (
 	"testing"
+	"time"
 
 	"github.com/reekoheek/brankas/pkg/vault"
-	"github.com/stretchr/testify/assert"
+	"gotest.tools/assert"
 )
 
 func TestAdded_Mutate(t *testing.T) {
@@ -12,17 +13,17 @@ func TestAdded_Mutate(t *testing.T) {
 		name   string
 		ev     vault.Event
 		aEntry vault.Entry
-		rErr   string
+		xErr   string
 	}{
 		{
 			"positive case 1",
-			Added{EventModel: vault.NewEventModel(99, "foo")},
+			Added{EventModel: vault.NewEventModel(99, "foo", time.Now())},
 			nil,
 			"",
 		},
 		{
 			"entry exists",
-			Added{EventModel: vault.NewEventModel(99, "foo")},
+			Added{EventModel: vault.NewEventModel(99, "foo", time.Now())},
 			Login{},
 			"entry exists",
 		},
@@ -32,11 +33,11 @@ func TestAdded_Mutate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			e, err := tt.ev.Mutate(tt.aEntry)
 			if err != nil {
-				assert.Equal(t, tt.rErr, err.Error())
+				assert.Equal(t, tt.xErr, err.Error())
 				return
 			}
 
-			assert.Equal(t, "", tt.rErr, "Expecting error: %s", tt.rErr)
+			assert.Equal(t, "", tt.xErr, "Expecting error: %s", tt.xErr)
 
 			entry := e.(Login)
 			assert.Equal(t, "", entry.Name)

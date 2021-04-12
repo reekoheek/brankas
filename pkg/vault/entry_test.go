@@ -3,7 +3,7 @@ package vault
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"gotest.tools/assert"
 )
 
 func TestEntryModel_ID(t *testing.T) {
