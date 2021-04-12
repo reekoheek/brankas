@@ -115,6 +115,73 @@ func TestVault_Version(t *testing.T) {
 	}
 }
 
+func TestVault_Events(t *testing.T) {
+	table := []struct {
+		name     string
+		v        Vault
+		aVersion int
+		xLen     int
+	}{
+		{
+			"1",
+			Vault{
+				commitedEvents: []Event{tNewEvent(1, "", nil), tNewEvent(2, "", nil)},
+			},
+			1,
+			2,
+		},
+		{
+			"2",
+			Vault{
+				commitedEvents: []Event{tNewEvent(1, "", nil), tNewEvent(2, "", nil)},
+			},
+			2,
+			1,
+		},
+		{
+			"2",
+			Vault{},
+			1,
+			0,
+		},
+	}
+
+	for _, tt := range table {
+		t.Run(tt.name, func(t *testing.T) {
+			evs := tt.v.Events(tt.aVersion)
+			assert.Equal(t, tt.xLen, len(evs))
+		})
+	}
+}
+
+func TestVault_UncommitedEvents(t *testing.T) {
+	table := []struct {
+		name string
+		v    Vault
+		xLen int
+	}{
+		{
+			"1",
+			Vault{
+				uncommitedEvents: []Event{tNewEvent(1, "", nil), tNewEvent(2, "", nil)},
+			},
+			2,
+		},
+		{
+			"2",
+			Vault{},
+			0,
+		},
+	}
+
+	for _, tt := range table {
+		t.Run(tt.name, func(t *testing.T) {
+			evs := tt.v.UncommitedEvents()
+			assert.Equal(t, tt.xLen, len(evs))
+		})
+	}
+}
+
 type tEvent struct {
 	EventModel
 	fn func(Entry) (Entry, error)

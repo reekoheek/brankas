@@ -14,6 +14,8 @@ type PushDTO struct {
 }
 
 type PullDTO struct {
+	ID      string
+	Version int
 }
 
 type service struct {
@@ -57,6 +59,33 @@ func (s *service) Push(ctx context.Context, dto PushDTO) error {
 	})
 }
 
-func (s *service) Pull(ctx context.Context, dto PullDTO) error {
-	return nil
+func (s *service) Pull(ctx context.Context, dto PullDTO) ([]EventDTO, error) {
+	if dto.ID == "" {
+		return nil, fmt.Errorf("invalid id")
+	}
+
+	var events []EventDTO
+
+	err := tx.Run(ctx, func(ctx context.Context) error {
+		v, err := s.rVaultGetter.Get(ctx, dto.ID)
+		if err != nil {
+			return err
+		}
+
+		for _, ev := range v.Events(dto.Version) {
+			dto, err := s.mToDTO.ToDTO(ev)
+			if err != nil {
+				return err
+			}
+			events = append(events, dto)
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return events, nil
 }

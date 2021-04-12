@@ -48,6 +48,16 @@ func (v *Vault) Version() int {
 	return 0
 }
 
+func (v *Vault) Events(version int) []Event {
+	var evs []Event
+	for _, ev := range v.commitedEvents {
+		if ev.Version() >= version {
+			evs = append(evs, ev)
+		}
+	}
+	return evs
+}
+
 func (v *Vault) UncommitedEvents() []Event {
 	return v.uncommitedEvents
 }
