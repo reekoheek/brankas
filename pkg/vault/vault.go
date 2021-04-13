@@ -3,16 +3,22 @@ package vault
 import "fmt"
 
 type Vault struct {
+	id               string
 	commitedEvents   []Event
 	uncommitedEvents []Event
 	entries          map[string]Entry
 }
 
-func New(evts []Event) Vault {
+func New(id string, evts []Event) Vault {
 	return Vault{
+		id:             id,
 		entries:        map[string]Entry{},
 		commitedEvents: evts,
 	}
+}
+
+func (v *Vault) ID() string {
+	return v.id
 }
 
 func (v *Vault) Apply(evt Event) error {

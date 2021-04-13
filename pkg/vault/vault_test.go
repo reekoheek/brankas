@@ -11,14 +11,17 @@ import (
 func TestNew(t *testing.T) {
 	table := []struct {
 		name    string
+		aID     string
 		aEvents []Event
 	}{
 		{
 			"positive case #1",
+			"foo",
 			nil,
 		},
 		{
 			"positive case #2",
+			"bar",
 			[]Event{
 				tNewEvent(1, "", nil),
 				tNewEvent(2, "", nil),
@@ -28,8 +31,9 @@ func TestNew(t *testing.T) {
 
 	for _, tt := range table {
 		t.Run(tt.name, func(t *testing.T) {
-			v := New(tt.aEvents)
+			v := New(tt.aID, tt.aEvents)
 
+			assert.Equal(t, tt.aID, v.id)
 			assert.Equal(t, 0, len(v.uncommitedEvents))
 			assert.Equal(t, len(tt.aEvents), len(v.commitedEvents))
 			assert.DeepEqual(t, tt.aEvents, v.commitedEvents, cmp.Comparer(func(ev1 Event, ev2 Event) bool {

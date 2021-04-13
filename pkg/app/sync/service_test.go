@@ -86,11 +86,11 @@ func TestService_Push(t *testing.T) {
 	for _, tt := range table {
 		t.Run(tt.name, func(t *testing.T) {
 			s := &service{
-				rVaultGetter: tGetter(func(context.Context, string) (vault.Vault, error) {
+				rVaultGetter: tGetter(func(ctx context.Context, id string) (vault.Vault, error) {
 					if tt.dGetterErr != nil {
 						return vault.Vault{}, tt.dGetterErr
 					}
-					return vault.New(nil), nil
+					return vault.New(id, nil), nil
 				}),
 				rVaultPersister: tPersister(func(ctx context.Context, v vault.Vault) error {
 					if tt.dPersisterErr != nil {
@@ -205,7 +205,7 @@ func TestService_Pull(t *testing.T) {
 					if tt.dGetterErr != nil {
 						return vault.Vault{}, tt.dGetterErr
 					}
-					return vault.New(tt.dEvents), nil
+					return vault.New("", tt.dEvents), nil
 				}),
 				mToDTO: tToDTOMapper(func(ev vault.Event) (EventDTO, error) {
 					if tt.dMapperErr != nil {

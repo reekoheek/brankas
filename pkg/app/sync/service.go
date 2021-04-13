@@ -18,6 +18,19 @@ type PullDTO struct {
 	Version int
 }
 
+type Pusher interface {
+	Push(context.Context, PushDTO) error
+}
+
+type Puller interface {
+	Pull(context.Context, PullDTO) ([]EventDTO, error)
+}
+
+type Service interface {
+	Pusher
+	Puller
+}
+
 type service struct {
 	rVaultGetter    vault.RepoGetter
 	rVaultPersister vault.RepoPersister
@@ -25,8 +38,14 @@ type service struct {
 	mToEvent        ToEventMapper
 }
 
-func New() *service {
-	return &service{}
+func New(vaultRepo vault.Repository) Service {
+	mapper := NewMapper()
+	return &service{
+		rVaultGetter:    vaultRepo,
+		rVaultPersister: vaultRepo,
+		mToDTO:          mapper,
+		mToEvent:        mapper,
+	}
 }
 
 func (s *service) Push(ctx context.Context, dto PushDTO) error {

@@ -99,18 +99,23 @@ func (u *uow) Rollback() error {
 	return result
 }
 
+func New() *uow {
+	return &uow{
+		crs:         map[interface{}]CommitRollbacker{},
+		preparer:    map[interface{}]Preparer{},
+		committers:  map[interface{}]Committer{},
+		rollbackers: map[interface{}]Rollbacker{},
+	}
+}
+
 // Acquire tx
 func Acquire(ctx context.Context, id interface{}, fn func() (CommitRollbacker, error)) (CommitRollbacker, error) {
-	if ctx == nil {
+	u := Of(ctx)
+	if u == nil {
 		return nil, ErrTxNotFound
 	}
 
-	tx, ok := ctx.Value(txKey).(*uow)
-	if !ok {
-		return nil, ErrTxNotFound
-	}
-
-	t, err := tx.Get(id, fn)
+	t, err := u.Get(id, fn)
 	if err != nil {
 		return nil, err
 	}
@@ -118,20 +123,32 @@ func Acquire(ctx context.Context, id interface{}, fn func() (CommitRollbacker, e
 	return t, nil
 }
 
+func Of(ctx context.Context) *uow {
+	if ctx == nil {
+		return nil
+	}
+
+	u, ok := ctx.Value(txKey).(*uow)
+	if !ok {
+		return nil
+	}
+
+	return u
+}
+
 // Run tx
 func Run(ctx context.Context, fn func(context.Context) error) error {
-	tx := &uow{
-		crs:         map[interface{}]CommitRollbacker{},
-		preparer:    map[interface{}]Preparer{},
-		committers:  map[interface{}]Committer{},
-		rollbackers: map[interface{}]Rollbacker{},
-	}
-	ctx = context.WithValue(ctx, txKey, tx)
+	u := New()
+	ctx = Context(ctx, u)
 
 	if err := fn(ctx); err != nil {
-		tx.Rollback()
+		u.Rollback()
 		return err
 	}
 
-	return tx.Commit()
+	return u.Commit()
+}
+
+func Context(ctx context.Context, u *uow) context.Context {
+	return context.WithValue(ctx, txKey, u)
 }
