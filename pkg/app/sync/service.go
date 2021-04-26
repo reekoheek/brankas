@@ -9,13 +9,13 @@ import (
 )
 
 type PushDTO struct {
-	ID     string
-	Events []EventDTO
+	ID     string     `json:"id"`
+	Events []EventDTO `json:"events"`
 }
 
 type PullDTO struct {
-	ID      string
-	Version int
+	ID      string `json:"id"`
+	Version int    `json:"version"`
 }
 
 type Pusher interface {

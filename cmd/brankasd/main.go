@@ -6,6 +6,7 @@ import (
 	"os"
 
 	dbsqlx "github.com/jmoiron/sqlx"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/reekoheek/brankas/internal/drivers/sqlx"
 	"github.com/reekoheek/brankas/pkg/app/sync"
 	"github.com/reekoheek/brankas/web/api"
@@ -64,7 +65,7 @@ func run() error {
 }
 
 func migrate(db *dbsqlx.DB) error {
-	// db.MustExec(vault.Schema)
+	db.MustExec(sqlx.VaultSchema)
 	// db.MustExec(auth.Schema)
 
 	// u := &struct{ Username string }{}

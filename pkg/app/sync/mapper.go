@@ -21,17 +21,17 @@ const (
 )
 
 type EventDTO struct {
-	Kind     string
-	ID       string
-	Version  int
-	At       time.Time
-	Username string
-	Mode     int
-	Name     string
-	Notes    string
-	Password string
-	Expiry   time.Time
-	URL      string
+	Kind     string    `json:"kind"`
+	ID       string    `json:"id"`
+	Version  int       `json:"version"`
+	At       time.Time `json:"at"`
+	Username string    `json:"username"`
+	Mode     int       `json:"mode"`
+	Name     string    `json:"name"`
+	Notes    string    `json:"notes"`
+	Password string    `json:"password"`
+	Expiry   time.Time `json:"expiry"`
+	URL      string    `json:"url"`
 }
 
 type ToDTOMapper interface {
