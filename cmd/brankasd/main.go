@@ -10,6 +10,7 @@ import (
 	"github.com/reekoheek/brankas/internal/drivers/sqlx"
 	"github.com/reekoheek/brankas/pkg/app/sync"
 	"github.com/reekoheek/brankas/web/api"
+	"github.com/reekoheek/brankas/web/auth"
 )
 
 func main() {
@@ -51,11 +52,15 @@ func run() error {
 	syncService := sync.New(vaultRepo)
 
 	api := api.New(syncService)
+	auth := auth.New()
 
 	fmt.Printf("Listening at :%s\n", port)
 
 	handler := http.NewServeMux()
+
+	handler.Handle("/auth/", http.StripPrefix("/auth", auth.Routes()))
 	handler.Handle("/api/", http.StripPrefix("/api", api.Routes()))
+	handler.Handle("/", http.FileServer(&spaFileSystem{http.Dir("./web/ui/www")}))
 
 	if err := http.ListenAndServe(":"+port, handler); err != nil {
 		return err
@@ -77,4 +82,16 @@ func migrate(db *dbsqlx.DB) error {
 	// db.MustExec(`INSERT INTO user(username, password, creator) VALUES("admin", ?, "")`, pwd)
 
 	return nil
+}
+
+type spaFileSystem struct {
+	root http.FileSystem
+}
+
+func (fs *spaFileSystem) Open(name string) (http.File, error) {
+	f, err := fs.root.Open(name)
+	if os.IsNotExist(err) {
+		return fs.root.Open("index.html")
+	}
+	return f, err
 }
