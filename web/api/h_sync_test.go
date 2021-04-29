@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/reekoheek/brankas/pkg/app/sync"
+	"github.com/reekoheek/brankas/web"
 	"gotest.tools/assert"
 )
 
@@ -130,7 +131,7 @@ func TestAPI_hSyncPull(t *testing.T) {
 			}
 
 			result := []sync.EventDTO{}
-			if err := parseBody(rr.Body, &result); err != nil {
+			if err := web.ParseBody(rr.Body, &result); err != nil {
 				t.Error(err)
 				return
 			}
@@ -176,11 +177,11 @@ func tAssertErr(t *testing.T, xErr string, rr *httptest.ResponseRecorder) {
 		return
 	}
 
-	var httpErr httpError
-	if err := parseBody(rr.Body, &httpErr); err != nil {
+	var webErr web.Error
+	if err := web.ParseBody(rr.Body, &webErr); err != nil {
 		t.Error(err)
 		return
 	}
 
-	assert.Equal(t, xErr, httpErr.Error())
+	assert.Equal(t, xErr, webErr.Error())
 }
